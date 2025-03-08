@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab3.Core", "Lab3.Core\Lab3.Core.csproj", "{DB29DCDA-B610-405D-BC02-681508958939}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab3.Application", "Lab3.Application\Lab3.Application.csproj", "{41DEF4E6-935B-4B74-B9B4-86042A07CEC8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB29DCDA-B610-405D-BC02-681508958939}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB29DCDA-B610-405D-BC02-681508958939}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB29DCDA-B610-405D-BC02-681508958939}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB29DCDA-B610-405D-BC02-681508958939}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41DEF4E6-935B-4B74-B9B4-86042A07CEC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41DEF4E6-935B-4B74-B9B4-86042A07CEC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41DEF4E6-935B-4B74-B9B4-86042A07CEC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41DEF4E6-935B-4B74-B9B4-86042A07CEC8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
