@@ -7,10 +7,17 @@ public static class Program
     public static void Main()
     {
         var generator = new PrimeNumberGenerator();
-        var key = generator.Generate();
-        var encryption = new SymmetricEncryption();
-        var s = encryption.EncryptFile("files/in.txt", "files/out.txt", key.ToString());
-        Console.WriteLine("---> {0}", s);
-        encryption.DecryptFile("files/out.txt", "files/out2.txt", s);
+        var k= generator.Generate();
+        var addByte = 0;
+        var key = new byte[8];
+        var encryption = new SymmetricEncryptionByte();
+        var array = encryption.UlongTyByte((long)k);
+        Array.Copy(array, 0, key, 0, 4);
+        k = generator.Generate();
+        array = encryption.UlongTyByte((long)k);
+        Array.Copy(array, 0, key, 4, 4);
+        var decodeKey = encryption.EncryptFile("files/in.txt", "files/out.txt", key, out addByte);
+        Console.WriteLine("---> {0}", decodeKey);
+        encryption.DecryptFile("files/out.txt", "files/out2.txt", decodeKey, addByte);
     }
 }
