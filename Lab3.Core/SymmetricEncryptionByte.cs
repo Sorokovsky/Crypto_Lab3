@@ -8,23 +8,11 @@ public class SymmetricEncryptionByte
     private const int QuantityOfRounds = 16;
     private byte[][] _blocks = [];
 
-    public static byte[] UlongTyByte(long k)
-    {
-        var key = new byte[4];
-        for (var i = 0; i < 4; i++)
-        {
-            key[3 - i] = (byte)((k & (255 << i * 8)) >> i * 8);
-        }
-        return key;
-    }
-
     public byte[] EncryptFile(string inputFile, string outputFile, byte[] key, out int addByte)
     {
         if (key.Length > 0)
         {
-            using var reader = File.OpenRead(inputFile);
-            var array = new byte[reader.Length];
-            reader.ReadExactly(array, 0, array.Length);
+            var array = ReadBytes(inputFile);
             array = ByteToRightLength(array);
             _blocks = CutByteIntoBlocks(array);
             key = CorrectKeyWord(key, SizeOfBlock / 2);
@@ -44,8 +32,7 @@ public class SymmetricEncryptionByte
                     result[i * _blocks[i].Length + j] = _blocks[i][j];
                 }
             }
-            using var writer = new FileStream(outputFile, FileMode.OpenOrCreate);
-            writer.Write(result, 0, result.Length);
+            WriteBytes(outputFile, result, result.Length);
             addByte = _addOfByte;
             return decodedKey;
         }
@@ -54,12 +41,24 @@ public class SymmetricEncryptionByte
         return [];
     }
 
-    public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey, int addByte)
+    private static void WriteBytes(string outputFile, byte[] result, int length)
     {
-        if (decodeKey.Length <= 0) return;
+        using var writer = new FileStream(outputFile, FileMode.OpenOrCreate);
+        writer.Write(result, 0, length);
+    }
+
+    private static byte[] ReadBytes(string inputFile)
+    {
         using var reader = File.OpenRead(inputFile);
         var array = new byte[reader.Length];
         reader.ReadExactly(array, 0, array.Length);
+        return array;
+    }
+
+    public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey, int addByte)
+    {
+        if (decodeKey.Length <= 0) return;
+        var array = ReadBytes(inputFile);
         _blocks = CutByteIntoBlocks(array);
         for (var j = 0; j < QuantityOfRounds; j++)
         {
@@ -73,18 +72,15 @@ public class SymmetricEncryptionByte
         for(var i = 0; i < _blocks.Length; i++) 
         for(var j = 0; j < _blocks[i].Length; j++)
             result[i * _blocks[i].Length + j] = _blocks[i][j];
-        using var writer = new FileStream(outputFile, FileMode.OpenOrCreate);
-        writer.Write(result, 0, result.Length - addByte);
+        WriteBytes(outputFile, result, result.Length - addByte);
     }
 
     private static byte[] ByteToRightLength(byte[] input)
     {
         _addOfByte = 0;
-        if ((input.Length % SizeOfBlock) != 0)
-        {
-            _addOfByte = SizeOfBlock - input.Length % SizeOfBlock;
-            Array.Resize(ref input, input.Length + _addOfByte);
-        }
+        if ((input.Length % SizeOfBlock) == 0) return input;
+        _addOfByte = SizeOfBlock - input.Length % SizeOfBlock;
+        Array.Resize(ref input, input.Length + _addOfByte);
 
         return input;
     }
@@ -146,7 +142,7 @@ public class SymmetricEncryptionByte
         return blocks;
     }
 
-    private byte[] CorrectKeyWord(byte[] input, int keyLength)
+    private static byte[] CorrectKeyWord(byte[] input, int keyLength)
     {
         Array.Resize(ref input, keyLength);
         return input;
@@ -162,8 +158,22 @@ public class SymmetricEncryptionByte
 
         return result;
     }
-    
-    private static byte[] F(byte[] first, byte[] second) => Xor(first, second);
+
+    private static byte[] F(byte[] first, byte[] second)
+    {
+        var sBox = new SBox();
+        var xored = Xor(first, second);
+        var length = Math.Min(first.Length, second.Length);
+        var result = new byte[first.Length];
+        for (var i = 0; i < length; i++)
+        {
+            var fromSBox = sBox.Substitute(xored[i]);
+            
+            result[i] = (byte)(((fromSBox << 1) | (fromSBox >> 3)) & (fromSBox << 2 | fromSBox >> 4));
+        }
+
+        return result;
+    }
 
     private static byte[] EncodeDesOneRound(byte[] input, byte[] key)
     {
