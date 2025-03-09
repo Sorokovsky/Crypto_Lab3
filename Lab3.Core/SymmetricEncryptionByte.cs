@@ -169,7 +169,7 @@ public class SymmetricEncryptionByte
         {
             var fromSBox = sBox.Substitute(xored[i]);
             
-            result[i] = (byte)(((fromSBox << 1) | (fromSBox >> 3)) & (fromSBox << 2 | fromSBox >> 4));
+            result[i] = (byte)(((fromSBox << 1) | (fromSBox >> 3)) & ((fromSBox << 2) | (fromSBox >> 4)));
         }
 
         return result;
