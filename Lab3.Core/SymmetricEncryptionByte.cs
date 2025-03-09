@@ -28,7 +28,7 @@ public class SymmetricEncryptionByte
             array = new byte[reader.Length];
             reader.Read(array, 0, array.Length);
             array = ByteToRightLength(array);
-            CutByteIntoBlocks(array);
+            Blocks = CutByteIntoBlocks(array);
             key = CorrectKeyWord(key, SizeOfBlock / 2);
             for (var j = 0; j < QuantityOfRounds; j++)
             {
@@ -64,7 +64,7 @@ public class SymmetricEncryptionByte
             using FileStream reader = File.OpenRead(inputFile);
             array = new byte[reader.Length];
             reader.Read(array, 0, array.Length);
-            CutByteIntoBlocks(array);
+            Blocks = CutByteIntoBlocks(array);
             for (var j = 0; j < QuantityOfRounds; j++)
             {
                 for (var i = 0; i < Blocks.Length; i++)
@@ -139,15 +139,17 @@ public class SymmetricEncryptionByte
         }
     }
 
-    private void CutByteIntoBlocks(byte[] input)
+    private byte[][] CutByteIntoBlocks(byte[] input)
     {
-        Blocks = new byte[input.Length / SizeOfBlock][];
+        var blocks = new byte[input.Length / SizeOfBlock][];
         var numberOfBlock = input.Length / SizeOfBlock;
         for (var i = 0; i < numberOfBlock; i++) Blocks[i] = new byte[SizeOfBlock];
         for(var i = 0; i < numberOfBlock; i++)
         {
-            Array.Copy(input, i * SizeOfBlock, Blocks[i], 0, SizeOfBlock);
+            Array.Copy(input, i * SizeOfBlock, blocks, 0, SizeOfBlock);
         }
+
+        return blocks;
     }
 
     private byte[] CorrectKeyWord(byte[] input, int keyLength)

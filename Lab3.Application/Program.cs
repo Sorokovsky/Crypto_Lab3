@@ -7,7 +7,7 @@ public static class Program
     public static void Main()
     {
         var generator = new PrimeNumberGenerator();
-        var k= generator.Generate();
+        var k = generator.Generate();
         var addByte = 0;
         var key = new byte[8];
         var encryption = new SymmetricEncryptionByte();

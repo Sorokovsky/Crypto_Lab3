@@ -20,7 +20,7 @@ public class SymmetricEncryption
             }
 
             s = StringToRightLength(s);
-            CutStringIntoBlocks(s);
+            Blocks = CutStringIntoBlocks(s);
             key = CorrectKeyWord(key, s.Length / (2 * Blocks.Length));
             key = StringToBinaryFormat(key);
             for (var j = 0; j < QuantityOfRounds; j++)
@@ -56,7 +56,7 @@ public class SymmetricEncryption
             }
 
             s = StringToBinaryFormat(s);
-            CutBinaryStringIntoBlocks(s);
+            Blocks = CutBinaryStringIntoBlocks(s);
             for (var j = 0; j < QuantityOfRounds; j++)
             {
                 for (var i = 0; i < Blocks.Length; i++)
@@ -99,25 +99,28 @@ public class SymmetricEncryption
         return output;
     }
 
-    private void CutStringIntoBlocks(string input)
+    private string[] CutStringIntoBlocks(string input)
     {
-        Blocks = new string[(input.Length * SizeOfChar) / SizeOfBlock];
+        var blocks = new string[(input.Length * SizeOfChar) / SizeOfBlock];
         var lengthOfBlocks = input.Length / Blocks.Length;
         for (var i = 0; i < Blocks.Length; i++)
         {
-            Blocks[i] = input.Substring(i * lengthOfBlocks, lengthOfBlocks);
-            Blocks[i] = StringToBinaryFormat(Blocks[i]);
+            blocks[i] = input.Substring(i * lengthOfBlocks, lengthOfBlocks);
+            blocks[i] = StringToBinaryFormat(Blocks[i]);
         }
+
+        return blocks;
     }
 
-    private void CutBinaryStringIntoBlocks(string input)
+    private string[] CutBinaryStringIntoBlocks(string input)
     {
-        Blocks = new string[input.Length / SizeOfBlock];
+        var blocks = new string[input.Length / SizeOfBlock];
         var lengthOfBlocks = input.Length / Blocks.Length;
         for (var i = 0; i < Blocks.Length; i++)
         {
-            Blocks[i] = input.Substring(i * lengthOfBlocks, lengthOfBlocks);
+            blocks[i] = input.Substring(i * lengthOfBlocks, lengthOfBlocks);
         }
+        return blocks;
     }
 
     private string CorrectKeyWord(string input, int lengthKey)
