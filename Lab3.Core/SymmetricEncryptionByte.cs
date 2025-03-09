@@ -8,7 +8,7 @@ public class SymmetricEncryptionByte
     private const int QuantityOfRounds = 16;
     private byte[][] _blocks = [];
 
-    public byte[] UlongTyByte(long k)
+    public static byte[] UlongTyByte(long k)
     {
         var key = new byte[4];
         for (var i = 0; i < 4; i++)
@@ -18,7 +18,7 @@ public class SymmetricEncryptionByte
         return key;
     }
 
-    public byte[]? EncryptFile(string inputFile, string outputFile, byte[] key, out int addByte)
+    public byte[] EncryptFile(string inputFile, string outputFile, byte[] key, out int addByte)
     {
         if (key.Length > 0)
         {
@@ -51,7 +51,7 @@ public class SymmetricEncryptionByte
         }
 
         addByte = _addOfByte;
-        return null;
+        return [];
     }
 
     public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey, int addByte)
