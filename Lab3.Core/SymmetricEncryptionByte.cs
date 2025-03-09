@@ -18,15 +18,13 @@ public class SymmetricEncryptionByte
         return key;
     }
 
-    public byte[] EncryptFile(string inputFile, string outputFile, byte[] key, out int addByte)
+    public byte[]? EncryptFile(string inputFile, string outputFile, byte[] key, out int addByte)
     {
         if (key.Length > 0)
         {
-            var decodedKey = new byte[key.Length];
-            byte[] array;
-            using FileStream reader = File.OpenRead(inputFile);
-            array = new byte[reader.Length];
-            reader.Read(array, 0, array.Length);
+            using var reader = File.OpenRead(inputFile);
+            var array = new byte[reader.Length];
+            reader.ReadExactly(array, 0, array.Length);
             array = ByteToRightLength(array);
             _blocks = CutByteIntoBlocks(array);
             key = CorrectKeyWord(key, SizeOfBlock / 2);
@@ -37,7 +35,7 @@ public class SymmetricEncryptionByte
                 key = KeyToNextRound(key);
             }
 
-            decodedKey = KeyToPreviousRound(key);
+            var decodedKey = KeyToPreviousRound(key);
             var result = new byte[_blocks.Length * _blocks[0].Length];
             for (var i = 0; i < _blocks.Length; i++)
             {
@@ -58,29 +56,25 @@ public class SymmetricEncryptionByte
 
     public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey, int addByte)
     {
-        if (decodeKey.Length > 0)
+        if (decodeKey.Length <= 0) return;
+        using var reader = File.OpenRead(inputFile);
+        var array = new byte[reader.Length];
+        reader.ReadExactly(array, 0, array.Length);
+        _blocks = CutByteIntoBlocks(array);
+        for (var j = 0; j < QuantityOfRounds; j++)
         {
-            byte[] array;
-            using FileStream reader = File.OpenRead(inputFile);
-            array = new byte[reader.Length];
-            reader.Read(array, 0, array.Length);
-            _blocks = CutByteIntoBlocks(array);
-            for (var j = 0; j < QuantityOfRounds; j++)
+            for (var i = 0; i < _blocks.Length; i++)
             {
-                for (var i = 0; i < _blocks.Length; i++)
-                {
-                    _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
-                }
-                decodeKey = KeyToPreviousRound(decodeKey);
+                _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
             }
-            decodeKey = KeyToNextRound(decodeKey);
-            var result = new byte[_blocks.Length * _blocks[0].Length];
-            for(var i = 0; i < _blocks.Length; i++) 
-                for(var j = 0; j < _blocks[i].Length; j++)
-                    result[i * _blocks[i].Length + j] = _blocks[i][j];
-            using var writer = new FileStream(outputFile, FileMode.OpenOrCreate);
-            writer.Write(result, 0, result.Length - addByte);
+            decodeKey = KeyToPreviousRound(decodeKey);
         }
+        var result = new byte[_blocks.Length * _blocks[0].Length];
+        for(var i = 0; i < _blocks.Length; i++) 
+        for(var j = 0; j < _blocks[i].Length; j++)
+            result[i * _blocks[i].Length + j] = _blocks[i][j];
+        using var writer = new FileStream(outputFile, FileMode.OpenOrCreate);
+        writer.Write(result, 0, result.Length - addByte);
     }
 
     private static byte[] ByteToRightLength(byte[] input)
@@ -158,29 +152,28 @@ public class SymmetricEncryptionByte
         return input;
     }
 
-    private byte[] XOR(byte[] first, byte[] second)
+    private static byte[] Xor(byte[] first, byte[] second)
     {
         var result = new byte[first.Length];
         for (var i = 0; i < first.Length; i++)
         {
-            result[i] = (byte)(((int)first[i] ^ (int)second[i]));
+            result[i] = (byte)(first[i] ^ second[i]);
         }
 
         return result;
     }
     
-    private byte[] F(byte[] first, byte[] second) => XOR(first, second);
+    private byte[] F(byte[] first, byte[] second) => Xor(first, second);
 
     private byte[] EncodeDesOneRound(byte[] input, byte[] key)
     {
         var k = input.Length / 2;
-        var temp = new byte[k];
         var result = new byte[input.Length];
         var l = new byte[k];
         var r = new byte[k];
         Array.Copy(input, 0, l, 0, k);
         Array.Copy(input, k, r, 0, k);
-        temp = XOR(l, F(r, key));
+        var temp = Xor(l, F(r, key));
         Array.Copy(r, 0, result, 0, k);
         Array.Copy(temp, 0, result, k, k);
         return result;
@@ -189,25 +182,23 @@ public class SymmetricEncryptionByte
     private byte[] DecodeDesOneRound(byte[] input, byte[] key)
     {
         var k = input.Length / 2;
-        var temp = new byte[k];
         var result = new byte[input.Length];
         var l = new byte[k];
         var r = new byte[k];
         Array.Copy(input, 0, l, 0, k);
         Array.Copy(input, k, r, 0, k);
-        temp = XOR(F(l, key), r);
+        var temp = Xor(F(l, key), r);
         Array.Copy(temp, 0, result, 0, k);
         Array.Copy(l, 0, result, k, k);
         return result;
     }
 
-    private byte[] KeyToNextRound(byte[] key)
+    private static byte[] KeyToNextRound(byte[] key)
     {
         var bits = ByteAllToBit(key);
-        byte first;
         for (var i = 0; i < ShiftKey; i++)
         {
-            first = bits[bits.Length - 1];
+            var first = bits[^1];
             for (var j = bits.Length - 1; j > 0; j--) bits[j] = bits[j - 1];
             bits[0] = first;
         }
@@ -216,15 +207,14 @@ public class SymmetricEncryptionByte
         return key;
     }
 
-    private byte[] KeyToPreviousRound(byte[] key)
+    private static byte[] KeyToPreviousRound(byte[] key)
     {
         var bits = ByteAllToBit(key);
-        byte first;
         for (var i = 0; i < ShiftKey; i++)
         {
-            first = bits[0];
+            var first = bits[0];
             for(var j = 0; j < bits.Length - 1; j++) bits[j] = bits[j + 1];
-            bits[bits.Length - 1] = first;
+            bits[^1] = first;
         }
         key = BitAllToByte(bits);
         return key;
