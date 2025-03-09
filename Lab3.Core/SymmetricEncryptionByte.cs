@@ -163,9 +163,9 @@ public class SymmetricEncryptionByte
         return result;
     }
     
-    private byte[] F(byte[] first, byte[] second) => Xor(first, second);
+    private static byte[] F(byte[] first, byte[] second) => Xor(first, second);
 
-    private byte[] EncodeDesOneRound(byte[] input, byte[] key)
+    private static byte[] EncodeDesOneRound(byte[] input, byte[] key)
     {
         var k = input.Length / 2;
         var result = new byte[input.Length];
@@ -179,7 +179,7 @@ public class SymmetricEncryptionByte
         return result;
     }
 
-    private byte[] DecodeDesOneRound(byte[] input, byte[] key)
+    private static byte[] DecodeDesOneRound(byte[] input, byte[] key)
     {
         var k = input.Length / 2;
         var result = new byte[input.Length];
