@@ -143,10 +143,10 @@ public class SymmetricEncryptionByte
     {
         var blocks = new byte[input.Length / SizeOfBlock][];
         var numberOfBlock = input.Length / SizeOfBlock;
-        for (var i = 0; i < numberOfBlock; i++) Blocks[i] = new byte[SizeOfBlock];
+        for (var i = 0; i < numberOfBlock; i++) blocks[i] = new byte[SizeOfBlock];
         for(var i = 0; i < numberOfBlock; i++)
         {
-            Array.Copy(input, i * SizeOfBlock, blocks, 0, SizeOfBlock);
+            Array.Copy(input, i * SizeOfBlock, blocks[i], 0, SizeOfBlock);
         }
 
         return blocks;
