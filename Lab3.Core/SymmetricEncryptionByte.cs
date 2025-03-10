@@ -28,6 +28,13 @@ public class SymmetricEncryptionByte
         }
 
         var decodedKey = KeyToPreviousRound(key);
+        var result = GenerateOutputBytes();
+        ByteFilesService.WriteBytes(outputFile, result, result.Length);
+        return decodedKey;
+    }
+
+    private byte[] GenerateOutputBytes()
+    {
         var result = new byte[_blocks.Length * _blocks[0].Length];
         for (var i = 0; i < _blocks.Length; i++)
         {
@@ -36,8 +43,8 @@ public class SymmetricEncryptionByte
                 result[i * _blocks[i].Length + j] = _blocks[i][j];
             }
         }
-        ByteFilesService.WriteBytes(outputFile, result, result.Length);
-        return decodedKey;
+
+        return result;
     }
 
     public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey)
@@ -52,10 +59,8 @@ public class SymmetricEncryptionByte
             }
             decodeKey = KeyToPreviousRound(decodeKey);
         }
-        var result = new byte[_blocks.Length * _blocks[0].Length];
-        for(var i = 0; i < _blocks.Length; i++) 
-        for(var j = 0; j < _blocks[i].Length; j++)
-            result[i * _blocks[i].Length + j] = _blocks[i][j];
+
+        var result = GenerateOutputBytes();
         ByteFilesService.WriteBytes(outputFile, result, result.Length - _addOfByte);
     }
 
