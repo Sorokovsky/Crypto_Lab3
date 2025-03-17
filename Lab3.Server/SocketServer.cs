@@ -9,7 +9,7 @@ public class SocketServer
     private readonly IPEndPoint _ipEndPoint;
     private readonly Socket _socket;
     
-    public static bool TryCreate(string ipAddress, int port, out SocketServer? socketServer)
+    public static bool TryCreate(string ipAddress, int port, out SocketServer socketServer)
     {
         try
         {
@@ -20,7 +20,7 @@ public class SocketServer
         }
         catch (Exception)
         {
-            socketServer = null;
+            socketServer = null!;
             return false;
         }
     }
