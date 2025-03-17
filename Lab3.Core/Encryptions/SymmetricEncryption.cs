@@ -2,12 +2,6 @@
 
 public partial class SymmetricEncryption
 {
-    private readonly int _sizeOfBlock;
-    private int _addOfByte;
-    private readonly int _shiftKey;
-    private readonly int _quantityOfRounds;
-    private byte[][] _blocks = [];
-
     public SymmetricEncryption(int sizeOfBlock = 16, int shiftKey = 2, int quantityOfRounds = 16)
     {
         _sizeOfBlock = sizeOfBlock;
