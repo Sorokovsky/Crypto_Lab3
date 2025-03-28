@@ -7,10 +7,7 @@ public static class Convertor
     public static byte[] UlongTyByte(long k)
     {
         var key = new byte[4];
-        for (var i = 0; i < 4; i++)
-        {
-            key[3 - i] = (byte)((k & (255 << i * 8)) >> i * 8);
-        }
+        for (var i = 0; i < 4; i++) key[3 - i] = (byte)((k & (255 << (i * 8))) >> (i * 8));
         return key;
     }
 

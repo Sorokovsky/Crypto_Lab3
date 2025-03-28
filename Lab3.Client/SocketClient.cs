@@ -9,6 +9,12 @@ public class SocketClient
     private readonly IPEndPoint _ipPoint;
     private readonly Socket _socket;
 
+    private SocketClient(IPEndPoint ipPoint)
+    {
+        _ipPoint = ipPoint;
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    }
+
     public static bool TryCreate(string ip, int port, out SocketClient socketClient)
     {
         try
@@ -42,8 +48,8 @@ public class SocketClient
             {
                 bytes = _socket.Receive(data, data.Length, 0);
                 builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-            }
-            while (_socket.Available > 0);
+            } while (_socket.Available > 0);
+
             Console.WriteLine("Server respond:" + builder);
             // закриваємо сокет
             _socket.Shutdown(SocketShutdown.Both);
@@ -53,12 +59,7 @@ public class SocketClient
         {
             Console.WriteLine(ex);
         }
-        Console.ReadLine();
-    }
 
-    private SocketClient(IPEndPoint ipPoint)
-    {
-        _ipPoint = ipPoint;
-        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        Console.ReadLine();
     }
 }

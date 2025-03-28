@@ -8,7 +8,7 @@ public partial class SymmetricEncryption
         _shiftKey = shiftKey;
         _quantityOfRounds = quantityOfRounds;
     }
-    
+
     public byte[] EncryptFile(string inputFile, string outputFile, byte[] key)
     {
         if (key.Length <= 0) return [];
@@ -33,10 +33,7 @@ public partial class SymmetricEncryption
         ReadAndProcessBytes(inputFile);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
-            for (var i = 0; i < _blocks.Length; i++)
-            {
-                _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
-            }
+            for (var i = 0; i < _blocks.Length; i++) _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
             decodeKey = KeyToPreviousRound(decodeKey);
         }
 
@@ -47,10 +44,7 @@ public partial class SymmetricEncryption
     private static byte[] Xor(byte[] first, byte[] second)
     {
         var result = new byte[first.Length];
-        for (var i = 0; i < first.Length; i++)
-        {
-            result[i] = (byte)(first[i] ^ second[i]);
-        }
+        for (var i = 0; i < first.Length; i++) result[i] = (byte)(first[i] ^ second[i]);
 
         return result;
     }
@@ -64,7 +58,7 @@ public partial class SymmetricEncryption
         for (var i = 0; i < length; i++)
         {
             var fromSBox = sBox.Substitute(xored[i]);
-            
+
             result[i] = (byte)(((fromSBox << 1) | (fromSBox >> 3)) & ((fromSBox << 2) | (fromSBox >> 4)));
         }
 

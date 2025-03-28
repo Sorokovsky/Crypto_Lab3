@@ -8,7 +8,13 @@ public class SocketServer
 {
     private readonly IPEndPoint _ipEndPoint;
     private readonly Socket _socket;
-    
+
+    private SocketServer(IPEndPoint ipPoint)
+    {
+        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        _ipEndPoint = ipPoint;
+    }
+
     public static bool TryCreate(string ipAddress, int port, out SocketServer socketServer)
     {
         try
@@ -58,11 +64,4 @@ public class SocketServer
             Console.WriteLine(e);
         }
     }
-    
-    private SocketServer(IPEndPoint ipPoint)
-    {
-        _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        _ipEndPoint = ipPoint;
-    }
-    
 }

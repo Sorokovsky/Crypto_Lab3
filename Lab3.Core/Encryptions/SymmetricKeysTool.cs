@@ -22,9 +22,10 @@ public partial class SymmetricEncryption
         for (var i = 0; i < _shiftKey; i++)
         {
             var first = bits[0];
-            for(var j = 0; j < bits.Length - 1; j++) bits[j] = bits[j + 1];
+            for (var j = 0; j < bits.Length - 1; j++) bits[j] = bits[j + 1];
             bits[^1] = first;
         }
+
         key = BitAllToByte(bits);
         return key;
     }
