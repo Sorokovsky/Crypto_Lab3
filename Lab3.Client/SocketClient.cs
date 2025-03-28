@@ -31,7 +31,8 @@ public class SocketClient
         try
         {
             var data = Encoding.Unicode.GetBytes(message);
-            _socket.Send(data);
+            _socket.Connect(_ipPoint);
+            _socket.Send(data, SocketFlags.None);
             // отримуємо відповідь
             data = new byte[256]; // буфер для відповіді
             var builder = new StringBuilder();
@@ -43,7 +44,7 @@ public class SocketClient
                 builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             }
             while (_socket.Available > 0);
-            Console.WriteLine("відповідь сервера:" + builder);
+            Console.WriteLine("Server respond:" + builder);
             // закриваємо сокет
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();

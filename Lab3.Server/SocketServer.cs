@@ -46,7 +46,7 @@ public class SocketServer
 
                 Console.WriteLine(DateTime.Now.ToShortTimeString() + ":" + builder);
 
-                var message = "ваше повідомлення доставлено";
+                var message = "Your message delivered";
                 data = Encoding.Unicode.GetBytes(message);
                 handler.Send(data);
                 handler.Shutdown(SocketShutdown.Both);
