@@ -1,4 +1,4 @@
-namespace Lab3.Core;
+namespace Lab3.Core.SystemInfo;
 
 public abstract class MainRegistry : IRegistry
 {

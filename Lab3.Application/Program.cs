@@ -1,7 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Lab3.Core;
-using Microsoft.Win32;
-using SymmetricEncryption = Lab3.Core.Encryptions.SymmetricEncryption;
+﻿using Lab3.Core.SystemInfo;
 
 namespace Lab3.Application;
 

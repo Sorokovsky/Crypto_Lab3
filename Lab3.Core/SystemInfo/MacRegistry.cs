@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Lab3.Core;
+namespace Lab3.Core.SystemInfo;
 
 public class MacRegistry : MainRegistry
 {
@@ -9,15 +9,15 @@ public class MacRegistry : MainRegistry
 
     private static string GetProcessorName()
     {
-        var process = new Process()
+        var process = new Process
         {
-            StartInfo = new ProcessStartInfo()
+            StartInfo = new ProcessStartInfo
             {
                 FileName = "/usr/sbin/sysctl",
                 Arguments = "-n machdep.cpu.brand_string",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
-                CreateNoWindow = true,
+                CreateNoWindow = true
             }
         };
         process.Start();
@@ -28,7 +28,7 @@ public class MacRegistry : MainRegistry
 
     private static string GetRam()
     {
-        var process = new Process()
+        var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
@@ -38,7 +38,7 @@ public class MacRegistry : MainRegistry
                 UseShellExecute = false
             }
         };
-    
+
         process.Start();
         var details = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
@@ -47,4 +47,3 @@ public class MacRegistry : MainRegistry
         return mb + "mb";
     }
 }
-    
