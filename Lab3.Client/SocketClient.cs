@@ -39,8 +39,7 @@ public class SocketClient
             var data = Encoding.Unicode.GetBytes(message);
             _socket.Connect(_ipPoint);
             _socket.Send(data, SocketFlags.None);
-            // отримуємо відповідь
-            data = new byte[256]; // буфер для відповіді
+            data = new byte[256];
             var builder = new StringBuilder();
             do
             {
