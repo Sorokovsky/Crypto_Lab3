@@ -9,4 +9,6 @@ public interface IRegistry
     public string Ram { get; }
 
     public string MachineName { get; }
+    
+    public string MacAddress { get; }
 }

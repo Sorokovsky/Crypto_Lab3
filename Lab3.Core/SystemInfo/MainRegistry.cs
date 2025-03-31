@@ -6,6 +6,7 @@ public abstract class MainRegistry : IRegistry
     public abstract string ProcessorName { get; }
     public string Ram => GetRam();
     public string MachineName => Environment.MachineName;
+    public abstract string MacAddress { get; }
 
     protected abstract long ExtractRam();
 

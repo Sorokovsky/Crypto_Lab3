@@ -5,6 +5,28 @@ namespace Lab3.Core.SystemInfo;
 public class MacRegistry : MainRegistry
 {
     public override string ProcessorName => GetProcessorName();
+    public override string MacAddress => GetMacAddress();
+
+    private static string GetMacAddress()
+    {
+        var process = new Process
+        {
+            StartInfo = new ProcessStartInfo
+            {
+                FileName = "/sbin/ifconfig",
+                Arguments = "en0 | awk '/ether/{print $2}'",
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            }
+        };
+
+        process.Start();
+        string mac = process.StandardOutput.ReadToEnd().Trim();
+        process.WaitForExit();
+
+        return string.IsNullOrEmpty(mac) ? "00:00:00:00:00:00" : mac;
+    }
+
     protected override long ExtractRam()
     {
         var process = new Process
