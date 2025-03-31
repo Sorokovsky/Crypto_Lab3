@@ -51,7 +51,6 @@ public class SocketClient
             } while (_socket.Available > 0);
 
             Console.WriteLine("Server respond:" + builder);
-            // закриваємо сокет
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
         }
