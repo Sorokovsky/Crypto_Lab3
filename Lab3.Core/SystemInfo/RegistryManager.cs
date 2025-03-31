@@ -6,7 +6,7 @@ public static class RegistryManager
     {
         { Platform.Macos, new MacRegistry() },
         { Platform.Linux, null },
-        { Platform.Windows, null }
+        { Platform.Windows, new WindowsRegistry() }
     };
 
     public static IRegistry GetRegistryForCurrentPlatform()

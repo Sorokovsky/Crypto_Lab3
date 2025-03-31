@@ -1,4 +1,4 @@
-using System.Net.NetworkInformation;
+using System.Management;
 using Microsoft.Win32;
 
 namespace Lab3.Core.SystemInfo;
@@ -14,15 +14,30 @@ public class WindowsRegistry : MainRegistry
 
     private static string GetMacAddress()
     {
-        var networkInterface = NetworkInterface.GetAllNetworkInterfaces()
-            .FirstOrDefault(n => n.OperationalStatus == OperationalStatus.Up && 
-                                 n.NetworkInterfaceType != NetworkInterfaceType.Loopback);
+        var mgmt = new ManagementClass("Win32_NetworkAdapterConfiguration");
+        var col = mgmt.GetInstances();
+        var address = string.Empty;
+        foreach (var obj in col)
+        {
+            if (address == string.Empty)
+                if ((bool)obj["IPEnabled"])
+                    address = obj["MacAddress"].ToString();
 
-        return networkInterface?.GetPhysicalAddress().ToString() ?? "00-00-00-00-00-00";
+            obj.Dispose();
+        }
+
+        return address;
     }
 
     protected override long ExtractRam()
     {
-        throw new NotImplementedException();
+        var searcher = new ManagementObjectSearcher("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
+        foreach (var obj in searcher.Get())
+        {
+            var totalBytes = Convert.ToInt64(obj["TotalPhysicalMemory"]);
+            return totalBytes;
+        }
+
+        return 0;
     }
 }

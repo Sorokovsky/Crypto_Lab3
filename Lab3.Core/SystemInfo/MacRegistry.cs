@@ -21,7 +21,7 @@ public class MacRegistry : MainRegistry
         };
 
         process.Start();
-        string mac = process.StandardOutput.ReadToEnd().Trim();
+        var mac = process.StandardOutput.ReadToEnd().Trim();
         process.WaitForExit();
 
         return string.IsNullOrEmpty(mac) ? "00:00:00:00:00:00" : mac;

@@ -1,6 +1,4 @@
-﻿using System.Text;
-using System.Text.Json;
-using Lab3.Core.SystemInfo;
+﻿using Lab3.Core.SystemInfo;
 
 namespace Lab3.Application;
 
@@ -10,5 +8,6 @@ public static class Program
     {
         var registry = RegistryManager.GetRegistryForCurrentPlatform();
         Console.WriteLine(UserInfo.FromRegistry(registry));
+        Console.WriteLine(Environment.UserName);
     }
 }
