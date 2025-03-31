@@ -8,6 +8,5 @@ public static class Program
     {
         var registry = RegistryManager.GetRegistryForCurrentPlatform();
         Console.WriteLine(UserInfo.FromRegistry(registry));
-        Console.WriteLine(Environment.UserName);
     }
 }
