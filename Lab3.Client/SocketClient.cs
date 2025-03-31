@@ -42,11 +42,9 @@ public class SocketClient
             // отримуємо відповідь
             data = new byte[256]; // буфер для відповіді
             var builder = new StringBuilder();
-            var bytes = 0;
-
             do
             {
-                bytes = _socket.Receive(data, data.Length, 0);
+                var bytes = _socket.Receive(data, data.Length, 0);
                 builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
             } while (_socket.Available > 0);
 
