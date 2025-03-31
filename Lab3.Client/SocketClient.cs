@@ -57,7 +57,8 @@ public class SocketClient
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
+            Console.WriteLine(ex.Message);
+            Console.WriteLine("Message not delivered");
         }
 
         Console.ReadLine();
