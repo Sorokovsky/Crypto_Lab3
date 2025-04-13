@@ -55,6 +55,7 @@ public class SocketClient
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             Console.WriteLine("Повідомлення з сервера не прийшло.");
             return string.Empty;
         }

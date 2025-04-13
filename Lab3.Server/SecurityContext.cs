@@ -16,7 +16,7 @@ public class SecurityContext
         return _userTable.Contains(value);
     }
 
-    public long Register(string value)
+    public void Register(string value)
     {
         var encryption = new SymmetricEncryption();
         var generator = new PrimeNumberGenerator();
@@ -24,8 +24,9 @@ public class SecurityContext
         var keyBytes = Convertor.UlongTyByte(key);
         var valueBytes = Encoding.UTF8.GetBytes(value);
         var (encrypted, decodeKey) = encryption.EncryptFile(valueBytes, keyBytes);
-        _userTable.Register(Encoding.UTF8.GetString(encrypted), BitConverter.ToInt64(decodeKey, 0));
-        return key;
+        var decodeKeyLong = BitConverter.ToInt64(decodeKey, 0);
+        var keys = new Keys(key, decodeKeyLong);
+        _userTable.Register(Encoding.UTF8.GetString(encrypted), keys);
     }
 
     private static SecurityContext GetInstance()

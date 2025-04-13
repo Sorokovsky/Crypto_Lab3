@@ -19,8 +19,8 @@ public static class Program
                     string response;
                     try
                     {
-                        var key = SecurityContext.Instance.Register(value);
-                        response = $"{ResponseStatus.Ok}:{key}";
+                        SecurityContext.Instance.Register(value);
+                        response = $"{ResponseStatus.Ok}";
                     }
                     catch (Exception)
                     {
@@ -31,6 +31,9 @@ public static class Program
                 }
                 else if (type == MessageType.Check)
                 {
+                    var contains = SecurityContext.Instance.Contains(value);
+                    var result = contains ? ServerBoolean.Yes : ServerBoolean.No;
+                    socket.Send(Encoding.UTF8.GetBytes(result));
                 }
                 else
                 {

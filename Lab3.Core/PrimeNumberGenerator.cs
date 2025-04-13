@@ -8,7 +8,7 @@ public class PrimeNumberGenerator
     {
         var numberBytes = new byte[4];
         _random.NextBytes(numberBytes);
-        var number = BitConverter.ToInt32(numberBytes, 0);
+        var number = BitConverter.ToUInt32(numberBytes, 0);
         while (!IsPrime(number))
             unchecked
             {
