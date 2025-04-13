@@ -6,6 +6,7 @@ using UiCommands.Core.Context;
 var context = new CommandContext("Головне меню", Encoding.UTF8);
 context.AppendCommands(
     new FeatureCommand(new AddNumbersFeature()),
-    new FeatureCommand(new MultiplyNumbersFeature())
+    new FeatureCommand(new MultiplyNumbersFeature()),
+    new BuyCommand()
 );
 context.Invoke();

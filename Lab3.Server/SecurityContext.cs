@@ -1,4 +1,8 @@
-﻿namespace Lab3.Server;
+﻿using System.Text;
+using Lab3.Core;
+using Lab3.Core.Encryptions;
+
+namespace Lab3.Server;
 
 public class SecurityContext
 {
@@ -12,9 +16,16 @@ public class SecurityContext
         return _userTable.Contains(value);
     }
 
-    public void Register(string value, string decodeKey)
+    public long Register(string value)
     {
-        _userTable.Register(value, decodeKey);
+        var encryption = new SymmetricEncryption();
+        var generator = new PrimeNumberGenerator();
+        var key = generator.Generate();
+        var keyBytes = Convertor.UlongTyByte(key);
+        var valueBytes = Encoding.UTF8.GetBytes(value);
+        var (encrypted, decodeKey) = encryption.EncryptFile(valueBytes, keyBytes);
+        _userTable.Register(Encoding.UTF8.GetString(encrypted), BitConverter.ToInt64(decodeKey, 0));
+        return key;
     }
 
     private static SecurityContext GetInstance()

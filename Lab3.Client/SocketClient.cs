@@ -6,22 +6,24 @@ namespace Lab3.Client;
 
 public class SocketClient
 {
+    private readonly Encoding _encoding;
     private readonly IPEndPoint _ipPoint;
     private readonly Socket _socket;
 
-    private SocketClient(IPEndPoint ipPoint)
+    private SocketClient(IPEndPoint ipPoint, Encoding encoding)
     {
         _ipPoint = ipPoint;
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        _encoding = encoding;
     }
 
-    public static bool TryCreate(string ip, int port, out SocketClient socketClient)
+    public static bool TryCreate(string ip, int port, Encoding encoding, out SocketClient socketClient)
     {
         try
         {
             var ipAddress = IPAddress.Parse(ip);
             var ipEndPoint = new IPEndPoint(ipAddress, port);
-            socketClient = new SocketClient(ipEndPoint);
+            socketClient = new SocketClient(ipEndPoint, encoding);
             return true;
         }
         catch (Exception e)
@@ -32,31 +34,29 @@ public class SocketClient
         }
     }
 
-    public void Send(string message)
+    public string Send(string message)
     {
         try
         {
-            var data = Encoding.Unicode.GetBytes(message);
+            var data = _encoding.GetBytes(message);
             _socket.Connect(_ipPoint);
             _socket.Send(data, SocketFlags.None);
             data = new byte[256];
             var builder = new StringBuilder();
             do
             {
-                var bytes = _socket.Receive(data, data.Length, 0);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                _socket.Receive(data, data.Length, SocketFlags.None);
+                builder.Append(_encoding.GetString(data));
             } while (_socket.Available > 0);
 
-            Console.WriteLine("Server respond:" + builder);
             _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
+            return builder.ToString();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            Console.WriteLine("Message not delivered");
+            Console.WriteLine("Повідомлення з сервера не прийшло.");
+            return string.Empty;
         }
-
-        Console.ReadLine();
     }
 }

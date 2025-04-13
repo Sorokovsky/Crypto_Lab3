@@ -8,22 +8,25 @@ public class SocketServer
 {
     public delegate void Callback(string message, Socket socket);
 
+    private readonly Encoding _encoding;
+
     private readonly IPEndPoint _ipEndPoint;
     private readonly Socket _socket;
 
-    private SocketServer(IPEndPoint ipPoint)
+    private SocketServer(IPEndPoint ipPoint, Encoding encoding)
     {
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         _ipEndPoint = ipPoint;
+        _encoding = encoding;
     }
 
-    public static bool TryCreate(string ipAddress, int port, out SocketServer socketServer)
+    public static bool TryCreate(string ipAddress, int port, Encoding encoding, out SocketServer socketServer)
     {
         try
         {
             var iPAddress = IPAddress.Parse(ipAddress);
             var iPEndPoint = new IPEndPoint(iPAddress, port);
-            socketServer = new SocketServer(iPEndPoint);
+            socketServer = new SocketServer(iPEndPoint, encoding);
             return true;
         }
         catch (Exception)
@@ -49,7 +52,7 @@ public class SocketServer
                 do
                 {
                     var bytesCount = handler.Receive(data);
-                    builder.Append(Encoding.Unicode.GetString(data, 0, bytesCount));
+                    builder.Append(_encoding.GetString(data, 0, bytesCount));
                 } while (handler.Available > 0);
 
                 callback?.Invoke(builder.ToString(), handler);

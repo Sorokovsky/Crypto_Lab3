@@ -18,7 +18,7 @@ public class FeatureCommand : BaseCommand
 
     public override void Invoke(IExitable? exitable = null)
     {
-        var hasPermission = _feature.IsFree;
+        var hasPermission = _feature.IsFree || SecurityContext.Instance.IsPro;
         if (hasPermission) _feature.Run();
         else Console.WriteLine("Купіть повну версію програми.");
     }
