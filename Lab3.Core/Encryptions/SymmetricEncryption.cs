@@ -9,10 +9,10 @@ public partial class SymmetricEncryption
         _quantityOfRounds = quantityOfRounds;
     }
 
-    public byte[] EncryptFile(string inputFile, string outputFile, byte[] key)
+    public (byte[], byte[]) EncryptFile(byte[] input, byte[] key)
     {
-        if (key.Length <= 0) return [];
-        ReadAndProcessBytes(inputFile);
+        if (key.Length <= 0) return ([], []);
+        ReadAndProcessBytes(input);
         key = CorrectKeyWord(key, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
@@ -23,14 +23,14 @@ public partial class SymmetricEncryption
 
         var decodedKey = KeyToPreviousRound(key);
         var result = GenerateOutputBytes();
-        ByteFilesService.WriteBytes(outputFile, result, result.Length);
-        return decodedKey;
+        return (result, decodedKey);
     }
 
-    public void DecryptFile(string inputFile, string outputFile, byte[] decodeKey)
+    public byte[] Decrypt(byte[] input, byte[] decodeKey)
     {
-        if (decodeKey.Length <= 0) return;
-        ReadAndProcessBytes(inputFile);
+        if (decodeKey.Length <= 0) return [];
+        ReadAndProcessBytes(input);
+        decodeKey = CorrectKeyWord(decodeKey, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
             for (var i = 0; i < _blocks.Length; i++) _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
@@ -38,7 +38,7 @@ public partial class SymmetricEncryption
         }
 
         var result = GenerateOutputBytes();
-        ByteFilesService.WriteBytes(outputFile, result, result.Length - _addOfByte);
+        return result;
     }
 
     private static byte[] Xor(byte[] first, byte[] second)

@@ -41,7 +41,7 @@ public static class Choosing
         return result!;
     }
 
-    public static int GetNumber(string name, int? min, int? max)
+    public static long GetNumber(string name, int? min, int? max)
     {
         var hasMin = min != null;
         var hasMax = max != null;
@@ -52,7 +52,7 @@ public static class Choosing
         var end = hasConditions ? ")" : string.Empty;
         var middle = hasMin && hasMax ? " та " : string.Empty;
         var fullText = $"{name}{start}{minText}{middle}{maxText}{end}";
-        int value;
+        long value;
         bool isError;
         do
         {
@@ -64,9 +64,9 @@ public static class Choosing
         return value;
     }
 
-    private static bool TryGetParseNumber(string text, out int value)
+    private static bool TryGetParseNumber(string text, out long value)
     {
-        var isNotParsed = int.TryParse(text, out value) == false;
+        var isNotParsed = long.TryParse(text, out value) == false;
         return isNotParsed;
     }
 }

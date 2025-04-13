@@ -12,10 +12,9 @@ public partial class SymmetricEncryption
         return result;
     }
 
-    private void ReadAndProcessBytes(string inputFile)
+    private void ReadAndProcessBytes(byte[] input)
     {
-        var array = ByteFilesService.ReadBytes(inputFile);
-        array = ByteToRightLength(array);
+        var array = ByteToRightLength(input);
         _blocks = CutByteIntoBlocks(array);
     }
 
