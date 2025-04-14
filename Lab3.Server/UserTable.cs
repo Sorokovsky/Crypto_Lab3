@@ -15,10 +15,12 @@ public class UserTable
         foreach (var user in _users)
         {
             var encryption = new SymmetricEncryption();
-            var result = encryption.Decrypt(Encoding.UTF8.GetBytes(user.Key),
-                BitConverter.GetBytes(user.Value));
-            var decryptedText = Encoding.UTF8.GetString(result);
-            if (decryptedText.StartsWith(value)) found = true;
+            var (result, _) = encryption.EncryptFile(Encoding.UTF8.GetBytes(value),
+                Convertor.UlongTyByte(user.Value));
+            var encrypted = Encoding.UTF8.GetString(result);
+            
+            var hashed = Hashing.GetHash(encrypted);
+            if (hashed.StartsWith(user.Key)) found = true;
         }
 
         return found;

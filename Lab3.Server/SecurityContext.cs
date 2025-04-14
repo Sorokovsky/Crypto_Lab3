@@ -25,7 +25,9 @@ public class SecurityContext
         var valueBytes = Encoding.UTF8.GetBytes(value);
         var (encrypted, decodeKey) = encryption.EncryptFile(valueBytes, keyBytes);
         var decodeKeyLong = BitConverter.ToInt64(decodeKey, 0);
-        _userTable.Register(Encoding.UTF8.GetString(encrypted), decodeKeyLong);
+        var encryptedText = Encoding.UTF8.GetString(encrypted);
+        var hashed = Hashing.GetHash(encryptedText);
+        _userTable.Register(hashed, key);
     }
 
     private static SecurityContext GetInstance()
