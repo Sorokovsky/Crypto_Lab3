@@ -26,11 +26,6 @@ public class UserTable
         return found;
     }
 
-    public long GetByValue(string value)
-    {
-        return _users[value];
-    }
-
     public void Register(string value, long keys)
     {
         _users.TryAdd(value, keys);
