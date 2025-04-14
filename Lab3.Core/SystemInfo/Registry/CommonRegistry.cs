@@ -13,10 +13,11 @@ public class CommonRegistry : MainRegistry
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "/sbin/ifconfig",
-                Arguments = "en0 | awk '/ether/{print $2}'",
+                FileName = "/bin/bash",
+                Arguments = "-c \"/sbin/ifconfig en0 | awk '/ether/{print $2}'\"",
                 RedirectStandardOutput = true,
-                UseShellExecute = false
+                UseShellExecute = false,
+                CreateNoWindow = true
             }
         };
 

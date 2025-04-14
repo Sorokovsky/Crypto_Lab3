@@ -48,8 +48,6 @@ public class SecurityContext
 
     private bool GetIsPro()
     {
-        var service = new FilesService();
-        if (!service.Exists(_fileName)) return false;
         var info = UserInfo.FromRegistry(_registry);
         var stringInfo = info.ToString();
         var response = Client.Send($"{MessageType.Check}:{stringInfo}");

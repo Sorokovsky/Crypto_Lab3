@@ -7,7 +7,7 @@ namespace Lab3.Server;
 
 public class UserTable
 {
-    private readonly IDictionary<string, Keys> _users = new ConcurrentDictionary<string, Keys>();
+    private readonly IDictionary<string, long> _users = new ConcurrentDictionary<string, long>();
 
     public bool Contains(string value)
     {
@@ -16,20 +16,20 @@ public class UserTable
         {
             var encryption = new SymmetricEncryption();
             var result = encryption.Decrypt(Encoding.UTF8.GetBytes(user.Key),
-                BitConverter.GetBytes(user.Value.Decrypt));
+                BitConverter.GetBytes(user.Value));
             var decryptedText = Encoding.UTF8.GetString(result);
-            if (decryptedText.Equals(value)) found = true;
+            if (decryptedText.StartsWith(value)) found = true;
         }
 
         return found;
     }
 
-    public Keys GetByValue(string value)
+    public long GetByValue(string value)
     {
         return _users[value];
     }
 
-    public void Register(string value, Keys keys)
+    public void Register(string value, long keys)
     {
         _users.TryAdd(value, keys);
     }
