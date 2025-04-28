@@ -1,4 +1,4 @@
-namespace Lab3.Core.Encryptions;
+namespace Lab3.Core.Encryptions.Symmetric;
 
 public partial class SymmetricEncryption
 {

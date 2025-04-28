@@ -2,6 +2,7 @@
 using System.Text;
 using Lab3.Core;
 using Lab3.Core.Encryptions;
+using SymmetricEncryption = Lab3.Core.Encryptions.Symmetric.SymmetricEncryption;
 
 namespace Lab3.Server;
 

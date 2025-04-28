@@ -1,10 +1,10 @@
-namespace Lab3.Core.Encryptions;
+namespace Lab3.Core.Encryptions.Symmetric;
 
 public partial class SymmetricEncryption
 {
     private byte[] KeyToNextRound(byte[] key)
     {
-        var bits = ByteAllToBit(key);
+        var bits = SymmetricEncryption.ByteAllToBit(key);
         for (var i = 0; i < _shiftKey; i++)
         {
             var first = bits[^1];
@@ -12,13 +12,13 @@ public partial class SymmetricEncryption
             bits[0] = first;
         }
 
-        key = BitAllToByte(bits);
+        key = SymmetricEncryption.BitAllToByte(bits);
         return key;
     }
 
     private byte[] KeyToPreviousRound(byte[] key)
     {
-        var bits = ByteAllToBit(key);
+        var bits = SymmetricEncryption.ByteAllToBit(key);
         for (var i = 0; i < _shiftKey; i++)
         {
             var first = bits[0];
@@ -26,7 +26,7 @@ public partial class SymmetricEncryption
             bits[^1] = first;
         }
 
-        key = BitAllToByte(bits);
+        key = SymmetricEncryption.BitAllToByte(bits);
         return key;
     }
 }

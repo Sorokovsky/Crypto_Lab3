@@ -4,6 +4,7 @@ using Lab3.Core.Encryptions;
 using UiCommands.Core.Commands;
 using UiCommands.Core.Interfaces;
 using UiCommands.Core.Selectors;
+using SymmetricEncryption = Lab3.Core.Encryptions.Symmetric.SymmetricEncryption;
 
 namespace Lab3.Application.Commands;
 

@@ -1,4 +1,4 @@
-﻿namespace Lab3.Core.Encryptions;
+﻿namespace Lab3.Core.Encryptions.Symmetric;
 
 public partial class SymmetricEncryption
 {
@@ -13,11 +13,11 @@ public partial class SymmetricEncryption
     {
         if (key.Length <= 0) return ([], []);
         ReadAndProcessBytes(input);
-        key = CorrectKeyWord(key, _sizeOfBlock / 2);
+        key = SymmetricEncryption.CorrectKeyWord(key, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
             for (var i = 0; i < _blocks.Length; i++)
-                _blocks[i] = EncodeDesOneRound(_blocks[i], key);
+                _blocks[i] = SymmetricEncryption.EncodeDesOneRound(_blocks[i], key);
             key = KeyToNextRound(key);
         }
 
@@ -30,10 +30,10 @@ public partial class SymmetricEncryption
     {
         if (decodeKey.Length <= 0) return [];
         ReadAndProcessBytes(input);
-        decodeKey = CorrectKeyWord(decodeKey, _sizeOfBlock / 2);
+        decodeKey = SymmetricEncryption.CorrectKeyWord(decodeKey, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
-            for (var i = 0; i < _blocks.Length; i++) _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
+            for (var i = 0; i < _blocks.Length; i++) _blocks[i] = SymmetricEncryption.DecodeDesOneRound(_blocks[i], decodeKey);
             decodeKey = KeyToPreviousRound(decodeKey);
         }
 
