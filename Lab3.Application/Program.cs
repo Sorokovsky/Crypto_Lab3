@@ -8,14 +8,10 @@ using UiCommands.Core.Context;
 // context.AppendCommands(new EncryptCommand(), new DecryptCommand());
 // context.Invoke();
 
-var generator = new PrimeNumberGenerator();
-var encryptor = new RSAEncryption();
-var k = generator.Generate();
-var k1 = generator.Generate();
-var n = encryptor.GenerateKey(43, 59, out var d, out var e);
+var n = RsaEncryption.GenerateKey(43, 59, out var d, out var e);
 var inputBytes = ByteFilesService.ReadBytes("files/in.txt");
-var outputBytes = encryptor.Encrypt(inputBytes, d, n);
+var outputBytes = RsaEncryption.Encrypt(inputBytes, d, n);
 ByteFilesService.WriteBytes("files/output.txt", outputBytes, outputBytes.Length);
 inputBytes = ByteFilesService.ReadBytes("files/output.txt");
-outputBytes = encryptor.Decrypt(inputBytes, e, n);
+outputBytes = RsaEncryption.Decrypt(inputBytes, e, n);
 ByteFilesService.WriteBytes("files/output-2.txt", outputBytes, outputBytes.Length);
