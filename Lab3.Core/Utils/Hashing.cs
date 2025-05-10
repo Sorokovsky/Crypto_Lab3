@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Lab3.Core;
+namespace Lab3.Core.Utils;
 
 public static class Hashing
 {
@@ -15,6 +15,7 @@ public static class Hashing
         {
             builder.Append(b.ToString("x2"));
         }
+
         return builder.ToString();
     }
 }

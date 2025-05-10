@@ -4,7 +4,7 @@ public class PrimeNumberGenerator
 {
     private readonly Random _random = new();
 
-    public long Generate()
+    public ulong Generate()
     {
         var numberBytes = new byte[4];
         _random.NextBytes(numberBytes);

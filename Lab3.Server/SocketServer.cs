@@ -1,12 +1,15 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Lab3.Core.Contracts;
+using Lab3.Core.CustomProtocol;
+using Lab3.Server.Controller;
 
 namespace Lab3.Server;
 
 public class SocketServer
 {
-    public delegate void Callback(string message, Socket socket);
+    private readonly List<IController> _controllers = [];
 
     private readonly Encoding _encoding;
 
@@ -18,6 +21,11 @@ public class SocketServer
         _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         _ipEndPoint = ipPoint;
         _encoding = encoding;
+    }
+
+    public void AddControllers(params IController[] controllers)
+    {
+        _controllers.AddRange(controllers);
     }
 
     public static bool TryCreate(string ipAddress, int port, Encoding encoding, out SocketServer socketServer)
@@ -36,34 +44,51 @@ public class SocketServer
         }
     }
 
-    public void Listen(Callback? callback = null)
+    public void Listen()
     {
         _socket.Bind(_ipEndPoint);
         _socket.Listen(10);
         Console.WriteLine("Listening for connections...");
-        try
+        while (true)
         {
-            while (true)
+            var socket = _socket.Accept();
+            try
             {
-                var handler = _socket.Accept();
-                var builder = new StringBuilder();
-                var data = new byte[256];
-
-                do
-                {
-                    var bytesCount = handler.Receive(data);
-                    builder.Append(_encoding.GetString(data, 0, bytesCount));
-                } while (handler.Available > 0);
-
-                callback?.Invoke(builder.ToString(), handler);
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                var request = ReadFromSocket(socket);
+                var response = FindController(request.Type).ProcessMessage(request.Value);
+                socket.Send(_encoding.GetBytes(response.ToString()));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine("Message not received");
+                var response = new Response(ResponseStatus.Error, e.Message);
+                socket.Send(_encoding.GetBytes(response.ToString()));
+            }
+            finally
+            {
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
             }
         }
-        catch (Exception e)
+    }
+
+    private Request ReadFromSocket(Socket socket)
+    {
+        var builder = new StringBuilder();
+        var data = new byte[256];
+        do
         {
-            Console.WriteLine(e.Message);
-            Console.WriteLine("Message not received");
-        }
+            var bytesCount = socket.Receive(data);
+            builder.Append(_encoding.GetString(data, 0, bytesCount));
+        } while (socket.Available > 0);
+
+        return Request.FromJson(builder.ToString());
+    }
+
+    private IController FindController(MessageType messageType)
+    {
+        return _controllers.FirstOrDefault(controller => controller.MessageType == messageType,
+            new NotFoundController());
     }
 }

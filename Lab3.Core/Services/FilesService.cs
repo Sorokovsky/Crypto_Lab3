@@ -1,4 +1,4 @@
-﻿namespace Lab3.Core;
+﻿namespace Lab3.Core.Services;
 
 public class FilesService
 {

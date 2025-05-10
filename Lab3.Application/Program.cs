@@ -1,17 +1,13 @@
 ﻿using System.Text;
-using Lab3.Application.Commands;
-using Lab3.Core;
-using Lab3.Core.Encryptions.RSA;
-using UiCommands.Core.Context;
+using Lab3.Core.Encryptions.Symmetric;
 
-// var context = new CommandContext("Головне меню", Encoding.UTF8);
-// context.AppendCommands(new EncryptCommand(), new DecryptCommand());
-// context.Invoke();
-
-var n = RsaEncryption.GenerateKey(43, 59, out var d, out var e);
-var inputBytes = ByteFilesService.ReadBytes("files/in.txt");
-var outputBytes = RsaEncryption.Encrypt(inputBytes, d, n);
-ByteFilesService.WriteBytes("files/output.txt", outputBytes, outputBytes.Length);
-inputBytes = ByteFilesService.ReadBytes("files/output.txt");
-outputBytes = RsaEncryption.Decrypt(inputBytes, e, n);
-ByteFilesService.WriteBytes("files/output-2.txt", outputBytes, outputBytes.Length);
+const string input = "Hello, my world";
+Console.WriteLine(input);
+var encryption = new SymmetricEncryption();
+var (encryptKey, decryptKey) = encryption.GenerateKeys();
+var output = Encoding.UTF8.GetString(encryption.Encrypt(Encoding.UTF8.GetBytes(input), encryptKey));
+Console.WriteLine($"Encrypted: {output}");
+var decrypted = Encoding.UTF8.GetString(encryption.Decrypt(Encoding.UTF8.GetBytes(output), decryptKey));
+Console.WriteLine("===========================================");
+Console.WriteLine($"Decrypted: {decrypted}");
+Console.WriteLine("End");

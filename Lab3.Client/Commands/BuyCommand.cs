@@ -9,6 +9,6 @@ public class BuyCommand : BaseCommand
 
     public override void Invoke(IExitable? exitable = null)
     {
-        SecurityContext.Instance.Activate();
+        SecurityContext.Instance.Register();
     }
 }

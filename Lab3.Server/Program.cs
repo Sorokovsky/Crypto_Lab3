@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Lab3.Core;
+using Lab3.Server.Controller;
 
 namespace Lab3.Server;
 
@@ -7,38 +7,18 @@ public static class Program
 {
     public static void Main()
     {
-        var socketServerCreated = SocketServer.TryCreate("127.0.0.1", 8080, Encoding.UTF8, out var serverSocket);
-        if (socketServerCreated)
-            serverSocket?.Listen((message, socket) =>
-            {
-                var splitIndex = message.IndexOf(':');
-                var type = message[..splitIndex];
-                var value = message[(splitIndex + 1)..];
-                if (type == MessageType.Register)
-                {
-                    string response;
-                    try
-                    {
-                        SecurityContext.Instance.Register(value);
-                        response = $"{ResponseStatus.Ok}";
-                    }
-                    catch (Exception)
-                    {
-                        response = ResponseStatus.Error;
-                    }
+        var createdSocket = SocketServer.TryCreate("127.0.0.1", 8080, Encoding.UTF8, out var serverSocket);
+        if (!createdSocket)
+        {
+            Console.WriteLine("Сокет не створено");
+            return;
+        }
 
-                    socket.Send(Encoding.UTF8.GetBytes(response));
-                }
-                else if (type == MessageType.Check)
-                {
-                    var contains = SecurityContext.Instance.Contains(value);
-                    var result = contains ? ServerBoolean.Yes : ServerBoolean.No;
-                    socket.Send(Encoding.UTF8.GetBytes(result));
-                }
-                else
-                {
-                    socket.Send("Unknown message"u8.ToArray());
-                }
-            });
+        var setEncryptionController = new SetEncryptionController();
+        var registerController = new RegisterController();
+        var checkController = new CheckController();
+        var unregisterController = new UnregisterController();
+        serverSocket.AddControllers(setEncryptionController, registerController, checkController, unregisterController);
+        serverSocket.Listen();
     }
 }

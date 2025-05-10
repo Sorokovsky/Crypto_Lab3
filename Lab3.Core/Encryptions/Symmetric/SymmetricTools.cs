@@ -2,6 +2,11 @@ namespace Lab3.Core.Encryptions.Symmetric;
 
 public partial class SymmetricEncryption
 {
+    public override string ToString()
+    {
+        return "Symmetric";
+    }
+
     private byte[] GenerateOutputBytes()
     {
         var result = new byte[_blocks.Length * _blocks[0].Length];

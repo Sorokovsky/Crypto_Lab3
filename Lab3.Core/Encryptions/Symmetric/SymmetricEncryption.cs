@@ -1,6 +1,6 @@
 ﻿namespace Lab3.Core.Encryptions.Symmetric;
 
-public partial class SymmetricEncryption
+public partial class SymmetricEncryption : IEncryption
 {
     public SymmetricEncryption(int sizeOfBlock = 16, int shiftKey = 2, int quantityOfRounds = 16)
     {
@@ -9,31 +9,52 @@ public partial class SymmetricEncryption
         _quantityOfRounds = quantityOfRounds;
     }
 
-    public (byte[], byte[]) EncryptFile(byte[] input, byte[] key)
+    public byte[] Encrypt(byte[] input, IKey encryptionKey)
     {
-        if (key.Length <= 0) return ([], []);
+        if (encryptionKey is not SymmetricKey symmetricKey) return [];
+        var key = symmetricKey.Bytes;
+        if (key.Length <= 0) return [];
         ReadAndProcessBytes(input);
-        key = SymmetricEncryption.CorrectKeyWord(key, _sizeOfBlock / 2);
+        key = CorrectKeyWord(key, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
             for (var i = 0; i < _blocks.Length; i++)
-                _blocks[i] = SymmetricEncryption.EncodeDesOneRound(_blocks[i], key);
+                _blocks[i] = EncodeDesOneRound(_blocks[i], key);
             key = KeyToNextRound(key);
         }
 
-        var decodedKey = KeyToPreviousRound(key);
         var result = GenerateOutputBytes();
-        return (result, decodedKey);
+        return result;
     }
 
-    public byte[] Decrypt(byte[] input, byte[] decodeKey)
+    public (IKey encryptKey, IKey decryptKey) GenerateKeys()
     {
+        var generator = new PrimeNumberGenerator();
+        var encodeKey = Convertor.UlongTyByte((long)generator.Generate());
+        var keys = (new SymmetricKey([]), new SymmetricKey([]));
+        if (encodeKey.Length == 0) return keys;
+        var key = CorrectKeyWord(encodeKey, _sizeOfBlock / 2);
+
+        for (var i = 0; i < _quantityOfRounds; i++)
+        {
+            key = KeyToNextRound(key);
+        }
+
+        return (new SymmetricKey(encodeKey), new SymmetricKey(KeyToPreviousRound(key)));
+    }
+
+    public Type EncodeKeyType { get; set; } = typeof(SymmetricKey);
+
+    public byte[] Decrypt(byte[] input, IKey decryptionKey)
+    {
+        if (decryptionKey is not SymmetricKey symmetricKey) return [];
+        var decodeKey = symmetricKey.Bytes;
         if (decodeKey.Length <= 0) return [];
         ReadAndProcessBytes(input);
-        decodeKey = SymmetricEncryption.CorrectKeyWord(decodeKey, _sizeOfBlock / 2);
+        decodeKey = CorrectKeyWord(decodeKey, _sizeOfBlock / 2);
         for (var j = 0; j < _quantityOfRounds; j++)
         {
-            for (var i = 0; i < _blocks.Length; i++) _blocks[i] = SymmetricEncryption.DecodeDesOneRound(_blocks[i], decodeKey);
+            for (var i = 0; i < _blocks.Length; i++) _blocks[i] = DecodeDesOneRound(_blocks[i], decodeKey);
             decodeKey = KeyToPreviousRound(decodeKey);
         }
 

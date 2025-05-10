@@ -19,6 +19,7 @@
       <Content Include="bin\Debug\net8.0\files\out2.txt" />
       <Content Include="bin\Debug\net8.0\files\output-2.txt" />
       <Content Include="bin\Debug\net8.0\files\output.txt" />
+        <Content Include="bin\Debug\net8.0\files\test.txt"/>
     </ItemGroup>
 
 </Project>

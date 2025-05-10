@@ -4,7 +4,7 @@ public partial class SymmetricEncryption
 {
     private byte[] KeyToNextRound(byte[] key)
     {
-        var bits = SymmetricEncryption.ByteAllToBit(key);
+        var bits = ByteAllToBit(key);
         for (var i = 0; i < _shiftKey; i++)
         {
             var first = bits[^1];
@@ -12,13 +12,13 @@ public partial class SymmetricEncryption
             bits[0] = first;
         }
 
-        key = SymmetricEncryption.BitAllToByte(bits);
+        key = BitAllToByte(bits);
         return key;
     }
 
     private byte[] KeyToPreviousRound(byte[] key)
     {
-        var bits = SymmetricEncryption.ByteAllToBit(key);
+        var bits = ByteAllToBit(key);
         for (var i = 0; i < _shiftKey; i++)
         {
             var first = bits[0];
@@ -26,7 +26,7 @@ public partial class SymmetricEncryption
             bits[^1] = first;
         }
 
-        key = SymmetricEncryption.BitAllToByte(bits);
+        key = BitAllToByte(bits);
         return key;
     }
 }
