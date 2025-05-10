@@ -11,13 +11,17 @@ public class RsaEncryption : IEncryption
     {
         var result = new List<byte>();
         if (encryptionKey is not RsaEncryptionKey rsaEncryptionKey) return result.ToArray();
+
         var e = rsaEncryptionKey.E;
         var n = rsaEncryptionKey.N;
+
         foreach (var element in input)
         {
-            var newElement = BigInteger.ModPow(element, e, n);
-            var bytes = newElement.ToByteArray();
-            result.AddRange(bytes);
+            var m = new BigInteger(new byte[] { element, 0 }); // уникнути знаковості
+            var c = BigInteger.ModPow(m, e, n);
+            var cBytes = c.ToByteArray();
+            result.Add((byte)cBytes.Length); // префікс довжини
+            result.AddRange(cBytes);
         }
 
         return result.ToArray();
@@ -27,17 +31,29 @@ public class RsaEncryption : IEncryption
     {
         var result = new List<byte>();
         if (decryptionKey is not RsaDecryptKey rsaDecryptKey) return result.ToArray();
+
         var d = rsaDecryptKey.D;
         var n = rsaDecryptKey.N;
-        foreach (var element in input)
+
+        var i = 0;
+        while (i < input.Length)
         {
-            var newElement = BigInteger.ModPow(element, d, n);
-            var bytes = newElement.ToByteArray();
-            result.AddRange(bytes);
+            int length = input[i]; // довжина блоку
+            i++;
+            var cBytes = input.Skip(i).Take(length).ToArray();
+            i += length;
+
+            var c = new BigInteger(cBytes);
+            var m = BigInteger.ModPow(c, d, n);
+
+            var mBytes = m.ToByteArray();
+            var originalByte = mBytes.Length > 0 ? mBytes[0] : (byte)0;
+            result.Add(originalByte);
         }
 
         return result.ToArray();
     }
+
 
     public (IKey encryptKey, IKey decryptKey) GenerateKeys()
     {
