@@ -1,11 +1,10 @@
-﻿/*
-using System.Text;
-using Lab3.Core.Encryptions.RSA;
+﻿using System.Text;
+using Lab3.Core.EllipticalCurves;
 
 const string input = "Hello, my world";
 Console.WriteLine("Input: " + input);
 
-var encryption = new RsaEncryption();
+var encryption = new EllipticalEncryption();
 var (encryptKey, decryptKey) = encryption.GenerateKeys();
 
 // Encrypt
@@ -19,12 +18,3 @@ var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
 Console.WriteLine("===========================================");
 Console.WriteLine("Decrypted: " + decryptedText);
 Console.WriteLine("End");
-*/
-
-using Point = Lab3.Core.EllipticalCurves.Point;
-
-var first = new Point(3, 10, 1, 1, 23);
-var second = new Point(9, 7, 1, 1, 23);
-var third = first + second;
-Console.WriteLine($"{first} + {second} = {third}");
-Console.WriteLine($"2 * {third} = {2 * third}");

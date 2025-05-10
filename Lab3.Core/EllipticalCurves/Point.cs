@@ -1,9 +1,11 @@
 ﻿using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace Lab3.Core.EllipticalCurves;
 
 public class Point
 {
+    [JsonConstructor]
     public Point(BigInteger x, BigInteger y, BigInteger a, BigInteger b, BigInteger p, bool isInfinity = false)
     {
         if (!isInfinity && !IsOnCurve(x, y, a, b, p))
@@ -19,6 +21,10 @@ public class Point
 
     // Конструктор копіювання
     public Point(Point point) : this(point.X, point.Y, point.A, point.B, point.P, point.IsInfinity)
+    {
+    }
+
+    public Point()
     {
     }
 
