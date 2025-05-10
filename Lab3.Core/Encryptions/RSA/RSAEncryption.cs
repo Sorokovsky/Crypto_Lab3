@@ -9,18 +9,20 @@ public class RsaEncryption : IEncryption
 
     public byte[] Encrypt(byte[] input, IKey encryptionKey)
     {
-        var result = new List<byte>();
-        if (encryptionKey is not RsaEncryptionKey rsaEncryptionKey) return result.ToArray();
+        if (encryptionKey is not RsaEncryptionKey rsaEncryptionKey)
+            return [];
 
         var e = rsaEncryptionKey.E;
         var n = rsaEncryptionKey.N;
+        var result = new List<byte>();
 
-        foreach (var element in input)
+        foreach (var plainByte in input)
         {
-            var m = new BigInteger(new byte[] { element, 0 }); // уникнути знаковості
-            var c = BigInteger.ModPow(m, e, n);
-            var cBytes = c.ToByteArray();
-            result.Add((byte)cBytes.Length); // префікс довжини
+            var message = new BigInteger(new[] { plainByte });
+            var encrypted = BigInteger.ModPow(message, e, n);
+            var cBytes = encrypted.ToByteArray();
+
+            result.Add((byte)cBytes.Length);
             result.AddRange(cBytes);
         }
 
@@ -38,16 +40,16 @@ public class RsaEncryption : IEncryption
         var i = 0;
         while (i < input.Length)
         {
-            int length = input[i]; // довжина блоку
+            int length = input[i];
             i++;
-            var cBytes = input.Skip(i).Take(length).ToArray();
+            var encryptedBytes = input.Skip(i).Take(length).ToArray();
             i += length;
 
-            var c = new BigInteger(cBytes);
-            var m = BigInteger.ModPow(c, d, n);
+            var encrypted = new BigInteger(encryptedBytes);
+            var message = BigInteger.ModPow(encrypted, d, n);
 
-            var mBytes = m.ToByteArray();
-            var originalByte = mBytes.Length > 0 ? mBytes[0] : (byte)0;
+            var messagesBytes = message.ToByteArray();
+            var originalByte = messagesBytes.Length > 0 ? messagesBytes[0] : (byte)0;
             result.Add(originalByte);
         }
 

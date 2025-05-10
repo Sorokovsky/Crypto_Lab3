@@ -19,10 +19,9 @@ public static class SecurityCenter
     {
         foreach (var user in UserTable.Instance.Users)
         {
-            var encryptedBytes = Encoding.UTF8.GetBytes(encrypted);
-            var decryptedBytes = user.Algorithm.Decrypt(encryptedBytes, user.Key);
-            var decrypted = Encoding.UTF8.GetString(decryptedBytes);
-            if (decrypted.Equals(user.Hash)) return true;
+            if (!IsCorrectUserAndSign(user, encrypted)) continue;
+            UserTable.Instance.Remove(user.Hash);
+            return true;
         }
 
         return false;
@@ -30,14 +29,18 @@ public static class SecurityCenter
 
     public static bool IsCorrectSign(string encrypted)
     {
-        foreach (var user in UserTable.Instance.Users)
-        {
-            var encryptedBytes = Encoding.UTF8.GetBytes(encrypted);
-            var decryptedBytes = user.Algorithm.Decrypt(encryptedBytes, user.Key);
-            var decrypted = Encoding.UTF8.GetString(decryptedBytes);
-            if (decrypted.Equals(user.Hash)) return true;
-        }
+        return UserTable.Instance.Users.Any(user => IsCorrectUserAndSign(user, encrypted));
+    }
 
-        return false;
+    private static bool IsCorrectUserAndSign(User user, string encrypted)
+    {
+        return Decrypt(user, encrypted).Equals(user.Hash);
+    }
+
+    private static string Decrypt(User user, string encrypted)
+    {
+        var encryptedBytes = Convert.FromBase64String(encrypted);
+        var decryptedBytes = user.Algorithm.Decrypt(encryptedBytes, user.Key);
+        return Encoding.UTF8.GetString(decryptedBytes);
     }
 }

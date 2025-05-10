@@ -63,7 +63,7 @@ public class SecurityContext
         var key = (IKey?)Activator.CreateInstance(encryption.EncodeKeyType);
         if (key is null) return false;
         key = key.FromJson(keyText);
-        var encrypted = Encoding.UTF8.GetString(encryption.Encrypt(Encoding.UTF8.GetBytes(hashed), key));
+        var encrypted = Convert.ToBase64String(encryption.Encrypt(Encoding.UTF8.GetBytes(hashed), key));
         var request = new Request(MessageType.Check, new CheckRequest(encrypted).ToString());
         var responseText = Client.Send(request.ToString());
         var response = Response.FromJson(responseText);

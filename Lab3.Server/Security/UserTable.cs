@@ -22,6 +22,11 @@ public class UserTable
         _users.Add(user);
     }
 
+    public void Remove(string hash)
+    {
+        _users.RemoveAll(u => u.Hash == hash);
+    }
+
     private static UserTable GetInstance()
     {
         if (_instance is null) _instance = new UserTable();
