@@ -50,7 +50,7 @@ public class SecurityContext
         _filesService.Write(AlgorithmFileName, encryption.ToString());
     }
 
-    public bool Verify()
+    private bool Verify()
     {
         var info = UserInfo.FromRegistry(_registry);
         var hashed = Hashing.GetHash(info.ToString());
