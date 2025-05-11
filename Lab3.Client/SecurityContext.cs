@@ -44,9 +44,9 @@ public class SecurityContext
         var request = new Request(MessageType.Register, body.ToString());
         var responseText = Client.Send(request.ToString());
         var response = Response.FromJson(responseText);
-        if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value.ToString());
+        if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value);
         Console.WriteLine("Успішна покупка про весрії.");
-        _filesService.Write(KeyFileName, response.Value.ToString());
+        _filesService.Write(KeyFileName, response.Value);
         _filesService.Write(AlgorithmFileName, encryption.ToString());
     }
 
@@ -67,8 +67,8 @@ public class SecurityContext
         var request = new Request(MessageType.Check, new CheckRequest(encrypted).ToString());
         var responseText = Client.Send(request.ToString());
         var response = Response.FromJson(responseText);
-        if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value.ToString());
-        return response.Value.ToString().Equals(nameof(ServerBoolean.Yes));
+        if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value);
+        return response.Value.Equals(nameof(ServerBoolean.Yes));
     }
 
     private static SocketClient GenerateSocket()

@@ -1,8 +1,9 @@
 ﻿using System.Numerics;
 using System.Text.Json;
-using Lab3.Core.EllipticalCurves;
 using Lab3.Core.Encryptions;
 using Lab3.Core.Encryptions.RSA;
+
+namespace Lab3.Core.EllipticalCurves;
 
 public class EllipticalEncryptionKey : IKey
 {

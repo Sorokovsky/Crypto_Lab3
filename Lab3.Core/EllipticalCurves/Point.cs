@@ -89,14 +89,12 @@ public class Point
     {
         if (first.X != second.X)
         {
-            // Додавання різних точок
             var numerator = Mod(second.Y - first.Y, first.P);
             var denominator = Mod(second.X - first.X, first.P);
             return ModDiv(numerator, denominator, first.P);
         }
         else
         {
-            // Подвоєння точки
             var numerator = Mod(3 * BigInteger.Pow(first.X, 2) + first.A, first.P);
             var denominator = Mod(2 * first.Y, first.P);
             return ModDiv(numerator, denominator, first.P);
@@ -105,7 +103,7 @@ public class Point
 
     private static bool IsOnCurve(BigInteger x, BigInteger y, BigInteger a, BigInteger b, BigInteger p)
     {
-        if (p == 0) return true; // Для нескінченної точки
+        if (p == 0) return true;
         var left = Mod(y * y, p);
         var right = Mod(BigInteger.Pow(x, 3) + a * x + b, p);
         return left == right;
@@ -129,8 +127,7 @@ public class Point
         if (a == 0)
             throw new DivideByZeroException();
 
-        BigInteger x, y;
-        var g = ExtendedGcd(a, p, out x, out y);
+        var g = ExtendedGcd(a, p, out var x, out _);
         if (g != 1)
             throw new ArithmeticException("Inverse doesn't exist");
 

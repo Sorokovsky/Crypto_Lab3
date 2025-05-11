@@ -61,7 +61,6 @@ public sealed class CommandContext : ICommandContext
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
             Console.WriteLine($"Сталася помилка: \"{e.Message}\".");
             Loop();
         }

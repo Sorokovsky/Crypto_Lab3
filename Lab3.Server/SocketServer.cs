@@ -56,6 +56,7 @@ public class SocketServer
             {
                 var request = ReadFromSocket(socket);
                 var response = FindController(request.Type).ProcessMessage(request.Value);
+                Console.WriteLine(response.ToString());
                 socket.Send(_encoding.GetBytes(response.ToString()));
             }
             catch (Exception e)
