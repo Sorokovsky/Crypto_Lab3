@@ -48,7 +48,7 @@ public class EllipticalEncryption : IEncryption
 
     public byte[] Decrypt(byte[] input, IKey decryptionKey)
     {
-        if (decryptionKey is not EllipticalEncryptionKey eccKey || eccKey.PrivateKey == null)
+        if (decryptionKey is not EllipticalDecodeKey eccKey || eccKey.Key == null)
             return [];
         var pointSize = P.ToByteArray().Length * 2 + 1;
         if (input.Length < pointSize)
@@ -60,7 +60,7 @@ public class EllipticalEncryption : IEncryption
 
         var r = Point.BytesToPoint(rBytes, A, B, P);
         var c = new BigInteger(cBytes);
-        var q = eccKey.PrivateKey * r;
+        var q = eccKey.Key * r;
         var xInv = BigIntMath.ModInverse(q.X, P);
         var m = c * xInv % P;
         return m.ToByteArray();
