@@ -1,20 +1,39 @@
 ﻿using System.Text;
 using Lab3.Core.EllipticalCurves;
 
-const string input = "Hello, my world";
-Console.WriteLine("Input: " + input);
+namespace Lab3.Application;
 
-var encryption = new EllipticalEncryption();
-var (encryptKey, decryptKey) = encryption.GenerateKeys();
+public static class Program
+{
+    public static void Main()
+    {
+        try
+        {
+            const string input = "Hello, my world";
+            var encryption = new EllipticalEncryption();
+            var (encryptKey, decryptKey) = encryption.GenerateKeys();
+            var encryptedBytes = encryption.Encrypt(Encoding.UTF8.GetBytes(input), encryptKey);
+            var encryptedBase64 = Convert.ToBase64String(encryptedBytes);
+            var decryptedBytes = encryption.Decrypt(Convert.FromBase64String(encryptedBase64), decryptKey);
+            var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
+            Console.WriteLine("Input: " + input);
+            Console.WriteLine("Encrypted: " + encryptedBase64);
 
-// Encrypt
-var encryptedBytes = encryption.Encrypt(Encoding.UTF8.GetBytes(input), encryptKey);
-var encryptedBase64 = Convert.ToBase64String(encryptedBytes);
-Console.WriteLine("Encrypted: " + encryptedBase64);
-
-// Decrypt
-var decryptedBytes = encryption.Decrypt(Convert.FromBase64String(encryptedBase64), decryptKey);
-var decryptedText = Encoding.UTF8.GetString(decryptedBytes);
-Console.WriteLine("===========================================");
-Console.WriteLine("Decrypted: " + decryptedText);
-Console.WriteLine("End");
+            Console.WriteLine("===========================================");
+            Console.WriteLine("Decrypted: " + decryptedText);
+            Console.WriteLine("End");
+            var json = encryptKey.ToString();
+            Console.WriteLine(json);
+            encryptKey = new EllipticalEncryptionKey().FromJson(json);
+            Console.WriteLine("Encrypted: " + encryptKey.ToString());
+        }
+        catch (InvalidOperationException je)
+        {
+            Console.WriteLine(je);
+        }
+        catch (Exception)
+        {
+            Main();
+        }
+    }
+}

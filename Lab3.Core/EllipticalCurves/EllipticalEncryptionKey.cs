@@ -1,39 +1,21 @@
 ﻿using System.Numerics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
+using Lab3.Core.EllipticalCurves;
 using Lab3.Core.Encryptions;
-
-namespace Lab3.Core.EllipticalCurves;
+using Lab3.Core.Encryptions.RSA;
 
 public class EllipticalEncryptionKey : IKey
 {
-    [JsonConstructor]
-    public EllipticalEncryptionKey(Point point)
-    {
-        Point = point;
-    }
-
-    [JsonConstructor]
-    public EllipticalEncryptionKey(BigInteger privateKey, Point publicKey)
-    {
-        PrivateKey = privateKey;
-        Point = publicKey;
-    }
-
-    public EllipticalEncryptionKey()
-    {
-    }
-
-    public Point Point { get; set; }
-    public BigInteger? PrivateKey { get; set; }
+    public Point PublicKey { get; set; }
+    public BigInteger PrivateKey { get; set; }
 
     public override string ToString()
     {
-        return JsonSerializer.Serialize(this);
+        return JsonSerializer.Serialize(this, BigIntegerConvertor.Options);
     }
 
     public IKey FromJson(string json)
     {
-        return JsonSerializer.Deserialize<EllipticalEncryptionKey>(json)!;
+        return JsonSerializer.Deserialize<EllipticalEncryptionKey>(json, BigIntegerConvertor.Options)!;
     }
 }

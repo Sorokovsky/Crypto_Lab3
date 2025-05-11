@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Lab3.Core.Encryptions.RSA;
 
 namespace Lab3.Core.EllipticalCurves;
 
@@ -151,6 +153,34 @@ public class Point
         return gcd;
     }
 
+    public static byte[] PointToBytes(Point point)
+    {
+        var xBytes = point.X.ToByteArray();
+        var yBytes = point.Y.ToByteArray();
+        var result = new byte[1 + xBytes.Length + yBytes.Length];
+
+        result[0] = 0x04;
+        Array.Copy(xBytes, 0, result, 1, xBytes.Length);
+        Array.Copy(yBytes, 0, result, 1 + xBytes.Length, yBytes.Length);
+
+        return result;
+    }
+
+    public static Point BytesToPoint(byte[] bytes, BigInteger a, BigInteger b, BigInteger p)
+    {
+        if (bytes[0] != 0x04)
+            throw new ArgumentException("Only uncompressed points are supported");
+        var componentSize = (bytes.Length - 1) / 2;
+        var xBytes = new byte[componentSize];
+        var yBytes = new byte[componentSize];
+        Array.Copy(bytes, 1, xBytes, 0, componentSize);
+        Array.Copy(bytes, 1 + componentSize, yBytes, 0, componentSize);
+        return new Point(
+            new BigInteger(xBytes),
+            new BigInteger(yBytes),
+            a, b, p);
+    }
+
     public static Point Infinity(BigInteger a, BigInteger b, BigInteger p)
     {
         return new Point(0, 0, a, b, p, true);
@@ -158,6 +188,11 @@ public class Point
 
     public override string ToString()
     {
-        return IsInfinity ? "Infinity" : $"({X}, {Y})";
+        return JsonSerializer.Serialize(this, BigIntegerConvertor.Options);
+    }
+
+    public static Point FromJson(string json)
+    {
+        return JsonSerializer.Deserialize<Point>(json, BigIntegerConvertor.Options)!;
     }
 }

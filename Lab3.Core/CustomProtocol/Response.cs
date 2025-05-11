@@ -4,7 +4,7 @@ using Lab3.Core.Encryptions.RSA;
 
 namespace Lab3.Core.CustomProtocol;
 
-public record Response(ResponseStatus Status, string Value)
+public record Response(ResponseStatus Status, object Value)
 {
     public override string ToString()
     {
@@ -13,6 +13,13 @@ public record Response(ResponseStatus Status, string Value)
 
     public static Response FromJson(string json)
     {
-        return JsonSerializer.Deserialize<Response>(json.Trim('\0'), BigIntegerConvertor.Options)!;
+        try
+        {
+            return JsonSerializer.Deserialize<Response>(json, BigIntegerConvertor.Options)!;
+        }
+        catch (Exception)
+        {
+            return JsonSerializer.Deserialize<Response>(json.Trim('\0'), BigIntegerConvertor.Options)!;
+        }
     }
 }

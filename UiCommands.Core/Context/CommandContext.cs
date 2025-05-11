@@ -55,8 +55,13 @@ public sealed class CommandContext : ICommandContext
         {
             while (_canExit is false) ChooseCommand().Invoke(this);
         }
+        catch (StackOverflowException e)
+        {
+            Console.WriteLine(e);
+        }
         catch (Exception e)
         {
+            Console.WriteLine(e.Message);
             Console.WriteLine($"Сталася помилка: \"{e.Message}\".");
             Loop();
         }
