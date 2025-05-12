@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Lab3.Core.EllipticalCurves;
+using Lab3.Core.Utils;
 
 namespace Lab3.Application;
 
@@ -9,7 +10,7 @@ public static class Program
     {
         try
         {
-            const string input = "Hello, my world";
+            const string input = "Привіт, мій 3 світ";
             var encryption = new EllipticalEncryption();
             var (encryptKey, decryptKey) = encryption.GenerateKeys();
             var encryptedBytes = encryption.Encrypt(Encoding.UTF8.GetBytes(input), encryptKey);

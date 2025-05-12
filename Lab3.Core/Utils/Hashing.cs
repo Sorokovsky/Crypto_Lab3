@@ -15,7 +15,6 @@ public static class Hashing
         {
             builder.Append(b.ToString("x2"));
         }
-
         return builder.ToString();
     }
 }

@@ -52,23 +52,30 @@ public class SecurityContext
 
     private bool Verify()
     {
-        var info = UserInfo.FromRegistry(_registry);
-        var hashed = Hashing.GetHash(info.ToString());
-        if (_filesService.Exists(KeyFileName) is false || _filesService.Exists(AlgorithmFileName) is false)
-            return false;
-        var keyText = _filesService.Read(KeyFileName);
-        var algorithmText = _filesService.Read(AlgorithmFileName);
-        var found = EncryptionsDictionary.Instance.TryGet(algorithmText, out var encryption);
-        if (found is false) return false;
-        var key = (IKey?)Activator.CreateInstance(encryption.EncodeKeyType);
-        if (key is null) return false;
-        key = key.FromJson(keyText);
-        var encrypted = Convert.ToBase64String(encryption.Encrypt(Encoding.UTF8.GetBytes(hashed), key));
-        var request = new Request(MessageType.Check, new CheckRequest(encrypted).ToString());
-        var responseText = Client.Send(request.ToString());
-        var response = Response.FromJson(responseText);
-        if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value);
-        return response.Value.Equals(nameof(ServerBoolean.Yes));
+        try
+        {
+            var info = UserInfo.FromRegistry(_registry);
+            var hashed = Hashing.GetHash(info.ToString());
+            if (_filesService.Exists(KeyFileName) is false || _filesService.Exists(AlgorithmFileName) is false)
+                return false;
+            var keyText = _filesService.Read(KeyFileName);
+            var algorithmText = _filesService.Read(AlgorithmFileName);
+            var found = EncryptionsDictionary.Instance.TryGet(algorithmText, out var encryption);
+            if (found is false) return false;
+            var key = (IKey?)Activator.CreateInstance(encryption.EncodeKeyType);
+            if (key is null) return false;
+            key = key.FromJson(keyText);
+            var encrypted = Convert.ToBase64String(encryption.Encrypt(Encoding.UTF8.GetBytes(hashed), key));
+            var request = new Request(MessageType.Check, new CheckRequest(encrypted).ToString());
+            var responseText = Client.Send(request.ToString());
+            var response = Response.FromJson(responseText);
+            if (response.Status == ResponseStatus.Error) throw new ArgumentException(response.Value);
+            return response.Value.Equals(nameof(ServerBoolean.Yes));
+        }
+        catch (Exception)
+        {
+            return Verify();
+        }
     }
 
     private static SocketClient GenerateSocket()
