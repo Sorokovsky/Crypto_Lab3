@@ -7,7 +7,6 @@ namespace Lab3.Core.EllipticalCurves;
 
 public class EllipticalEncryption : IEncryption
 {
-    // Curve parameters (secp256r1/NIST P-256)
     private static readonly BigInteger P =
         BigInteger.Parse("115792089210356248762697446949407573530086143415290314195533631308867097853951");
 
@@ -31,31 +30,19 @@ public class EllipticalEncryption : IEncryption
     {
         if (encryptionKey is not EllipticalEncryptionKey eccKey)
             throw new ArgumentException("Invalid key type", nameof(encryptionKey));
-
-        // 1. Generate random ephemeral key
         var r = GenerateRandomScalar();
         var R = r * G;
-
-        // 2. Compute shared secret
         var sharedPoint = r * eccKey.PublicKey;
-        var sharedSecret = sharedPoint.X.ToByteArray();
-
-        // 3. Prepare output with ephemeral public key
         var rBytes = Point.PointToBytes(R);
         var result = new List<byte>(rBytes);
-
-        // 4. Process message in chunks of 32 bytes (max for P-256)
         var chunkSize = 32;
         for (var i = 0; i < input.Length; i += chunkSize)
         {
             var currentChunkSize = Math.Min(chunkSize, input.Length - i);
             var chunk = new byte[currentChunkSize];
             Array.Copy(input, i, chunk, 0, currentChunkSize);
-
-            // 5. Encrypt each chunk
             var m = new BigInteger(chunk, true, true);
             if (m >= P)
-                // Handle last chunk that might be smaller
                 m = new BigInteger(chunk, true, true) % P;
 
             var c = m * sharedPoint.X % P;
@@ -69,21 +56,15 @@ public class EllipticalEncryption : IEncryption
     {
         if (decryptionKey is not EllipticalDecodeKey eccKey || eccKey.Key == null)
             throw new ArgumentException("Invalid key type", nameof(decryptionKey));
-
-        // 1. Extract ephemeral public key (first 65 bytes for uncompressed point)
-        var pointSize = 65; // 0x04 + 32 bytes X + 32 bytes Y
+        var pointSize = 65;
         if (input.Length < pointSize)
             throw new ArgumentException("Invalid input", nameof(input));
 
         var rBytes = new byte[pointSize];
         Array.Copy(input, 0, rBytes, 0, pointSize);
         var R = Point.BytesToPoint(rBytes, A, B, P);
-
-        // 2. Compute shared secret
         var sharedPoint = eccKey.Key * R;
         var xInv = BigIntMath.ModInverse(sharedPoint.X, P);
-
-        // 3. Process encrypted chunks
         var result = new List<byte>();
         for (var i = pointSize; i < input.Length; i += 32)
         {
@@ -95,8 +76,6 @@ public class EllipticalEncryption : IEncryption
             var m = c * xInv % P;
             result.AddRange(m.ToByteArray(true, true));
         }
-
-        // Remove padding zeros if any
         while (result.Count > 0 && result[result.Count - 1] == 0)
             result.RemoveAt(result.Count - 1);
 
@@ -134,11 +113,7 @@ public class EllipticalEncryption : IEncryption
             // Генеруємо випадкові байти
             rng.GetBytes(randomBytes);
         }
-
-        // Конвертуємо байти в BigInteger
         var scalar = new BigInteger(randomBytes, true, true);
-
-        // Застосовуємо модуль N (порядок групи точок кривої)
         scalar = scalar % N;
 
         // Переконуємося, що скаляр знаходиться в правильному діапазоні [1, N-1]
